@@ -1,0 +1,18 @@
+.color-box {
+  width: 20px;
+  height: 20px;
+  border: solid 2px #0b0b0b; }
+
+textarea {
+  height: 60px !important;
+  width: 100% !important; }
+
+td.label {
+  padding-right: 10px; }
+
+.min-sized {
+  min-height: 600px; }
+
+.contentDiv .aui-field-element {
+  width: 98%; }
+

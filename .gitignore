@@ -4,3 +4,6 @@
 *.jar
 *.war
 *.ear
+/docroot/WEB-INF/classes/content/Language_en.properties
+/docroot/WEB-INF/classes/content/Language_hu.properties
+/docroot/WEB-INF/classes/content/Language.properties
