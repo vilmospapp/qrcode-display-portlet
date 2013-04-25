@@ -22,6 +22,7 @@ import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -32,11 +33,14 @@ import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import de.chrfr.gfx.PNG;
+
 import hu.vilmospapp.qrcodedisplay.Constants;
 
 import java.awt.Color;
+
 import java.io.IOException;
 import java.io.OutputStream;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -175,6 +179,7 @@ public class QRCodeDisplayPortlet extends MVCPortlet {
 
 					outputStream.write(array);
 				}
+
 				outputStream.flush();
 			}
 		}

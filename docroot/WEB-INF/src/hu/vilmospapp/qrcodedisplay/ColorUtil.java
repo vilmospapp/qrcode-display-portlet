@@ -54,9 +54,8 @@ public class ColorUtil {
 		int green = Integer.parseInt(greenHex, 16);
 		int blue = Integer.parseInt(blueHex, 16);
 
-		String [] rgb = new String[] {
-							String.valueOf(red),
-							String.valueOf(green),
+		String[] rgb = new String[] {
+							String.valueOf(red), String.valueOf(green),
 							String.valueOf(blue)
 						};
 

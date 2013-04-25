@@ -87,6 +87,7 @@
 				<aui:input inputCssClass="aui-field-digits" label="margin" name="marginField" type="input" value="<%= margin %>" />
 
 				<aui:select label="dimensions" name="dimensions">
+
 					<%
 						for (int size = 21; size <= 177; size +=4) {
 							StringBundler sb = new StringBundler(4);
@@ -95,13 +96,16 @@
 							sb.append(size);
 							sb.append(" pixels");
 					%>
+
 					<aui:option label="<%= sb.toString() %>" selected="<%= dimension == size %>" value="<%= size %>" />
+
 					<%
 						}
 					%>
+
 				</aui:select>
 
-				<aui:input disabled="<%= displayType != Constants.DISPLAY_TYPE_CURRENT_URL %>"  helpMessage="strip-params-help" label="strip-params" name="stripParamsField" checked="<%= stripParams %>" type="checkbox" />
+				<aui:input checked="<%= stripParams %>"  disabled="<%= displayType != Constants.DISPLAY_TYPE_CURRENT_URL %>" helpMessage="strip-params-help" label="strip-params" name="stripParamsField" type="checkbox" />
 
 				<%
 					boolean disabled = ((displayType == Constants.DISPLAY_TYPE_CURRENT_URL) || (displayType == Constants.DISPLAY_TYPE_PORTAL_URL));
@@ -114,7 +118,7 @@
 		</liferay-ui:panel>
 		<liferay-ui:panel collapsible="<%= true %>" defaultState="close" extended="<%= false %>" id="preferences" persistState="<%= true %>" title="image-decoration-setup">
 			<aui:fieldset>
-				<aui:input helpMessage="border-setup-help" label="border-enabled" name="borderEnabledField" type="checkbox" checked="<%= borderEnabled %>" />
+				<aui:input checked="<%= borderEnabled %>" helpMessage="border-setup-help" label="border-enabled" name="borderEnabledField" type="checkbox" />
 
 				<aui:input helpMessage="border-radius-help" inputCssClass="aui-field-digits"  label="border-radius" name="borderRadiusField" type="text" value="<%= borderRadius %>" />
 
@@ -146,7 +150,7 @@
 					</tr>
 				</table>
 				<hr />
-				<aui:input label="shadow-enabled" name="shadowEnabledField" type="checkbox" checked="<%= shadowEnabled %>" />
+				<aui:input checked="<%= shadowEnabled %>" label="shadow-enabled" name="shadowEnabledField" type="checkbox" />
 
 				<aui:input label="shadow-angle" name="shadowAngleField" type="text" value="<%= shadowAngle %>" />
 
@@ -174,14 +178,18 @@
 		<liferay-ui:panel collapsible="<%= true %>" defaultState="close" extended="<%= false %>" id="preferences" persistState="<%= true %>" title="advanced-setup">
 			<aui:fieldset>
 				<aui:select helpMessage="characterset-help" label="characterset" name="characterSetField">
+
 				<%
 					Map<String, Charset> charSets = Charset.availableCharsets();
 					for (String key : charSets.keySet()) {
 						%>
+
 							<aui:option label="<%= key.toLowerCase() %>" selected="<%= characterSet.equals(key) %>" value="<%= key %>" />
+
 						<%
 					}
 				%>
+
 				</aui:select>
 
 				<aui:select helpMessage="mode-selector-help" label="mode-selector" name="modeField">

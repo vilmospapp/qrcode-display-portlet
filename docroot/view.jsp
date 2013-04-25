@@ -65,7 +65,7 @@ if (shadowEnabled) {
 
 
 	int horizonalPlacement = (int)(shadowDistance * Math.cos(Math.toRadians(shadowAngle)));
-	int verticalPlacement =  (int)(shadowDistance * Math.sin(Math.toRadians(shadowAngle)));
+	int verticalPlacement = (int)(shadowDistance * Math.sin(Math.toRadians(shadowAngle)));
 
 	double opacity = ((double)shadowOpacity)/100;
 
@@ -145,8 +145,8 @@ if ((borderCSS.length() > 0) || (shadowCSS.length() > 0)) {
 }
 
 css += shadowCSS.toString();
-
 %>
+
 <div style="height:<%= (dimension + borderWidth + shadowDistance) %>px;">
 	<div <%= (css.length() > 0 ? ("style=\"" + css.toString() + "\"") : StringPool.BLANK ) %>>
 		<img src="<%= qrCodeImageURL.toString() %>" />
