@@ -216,6 +216,7 @@
 
 <aui:script>
 	var <portlet:namespace />formValidator;
+
 	Liferay.provide(
 		window,
 		'<portlet:namespace />saveConfiguration',
@@ -378,13 +379,13 @@
 			var maxLength = 0;
 
 			switch(modeField.val()) {
-				case '<%= Constants.MODE_NUMERIC %>': maxLength = format.numeric;
+				case '<%= Constants.MODE_NUMERIC %>': maxLength = format['numeric'];
 					break;
-				case '<%= Constants.MODE_ALPHANUMERIC %>': maxLength = format.alphanumeric;
+				case '<%= Constants.MODE_ALPHANUMERIC %>': maxLength = format['alphanumeric'];
 					break;
-				case '<%= Constants.MODE_BYTE %>': maxLength = format.byte;
+				case '<%= Constants.MODE_BYTE %>': maxLength = format['byte'];
 					break;
-				case '<%= Constants.MODE_KANJI %>': maxLength = format.kanji;
+				case '<%= Constants.MODE_KANJI %>': maxLength = format['kanji'];
 					break;
 			}
 
