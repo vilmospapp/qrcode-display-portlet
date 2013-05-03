@@ -19,6 +19,8 @@
 
 <liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
 
+<liferay-util:include page="/main_js.jsp" servletContext="<%= application %>" strict="true" />
+
 <aui:form action="<%= configurationURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveConfiguration();" %>'>
 	<aui:input name="preferences--backgroundColor--" type="hidden" value="<%= backgroundColor %>" />
 	<aui:input name="preferences--borderColor--" type="hidden" value="<%= borderColor %>" />
@@ -249,6 +251,17 @@
 			if (contentField.attr('disabled')) {
 				contentField.val('');
 			}
+			else {
+				if (contentField.val().length > <portlet:namespace />getMaxLength()) {
+					<portlet:namespace />formValidator.highlight(contentField, false);
+
+					alert('<liferay-ui:message key="given-content-is-too-long-max-length-is"></liferay-ui:message> : ' + <portlet:namespace />getMaxLength());
+
+					contentField.focus();
+
+					return;
+				}
+			}
 
 			if (stripParamsField.attr('disabled')) {
 				stripParamsField.val(false);
@@ -344,93 +357,32 @@
 
 		});
 
-	Liferay.provide(
-		window,
-		'<portlet:namespace />updateFormValidator',
-		function() {
-			var A = AUI();
-
-			var dimensionsField = A.one('#<portlet:namespace />dimensions');
-			var displayTypeField = A.one('#<portlet:namespace />displayTypeField');
-			var errorCorrectionField = A.one('#<portlet:namespace />errorCorrectionField');
-			var modeField = A.one('#<portlet:namespace />modeField');
-
-			if (displayTypeField.val() != <%= Constants.DISPLAY_TYPE_CUSTOM_TEXT %>) {
-				return;
-			}
-
-			var dimension = "D" + dimensionsField.val() + "x" + dimensionsField.val();
-			var errorCorrection = "";
-
-			switch(errorCorrectionField.val()) {
-				case '<%= Constants.ERROR_CORRECTION_LOW %>': errorCorrection = 'L';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_MEDIUM %>': errorCorrection = 'M';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_QUARTILE %>': errorCorrection = 'Q';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_HIGH %>': errorCorrection = 'L';
-					break;
-			}
-
-			var formatKey = dimension + errorCorrection;
-			var format = formats[formatKey];
-
-			var maxLength = 0;
-
-			switch(modeField.val()) {
-				case '<%= Constants.MODE_NUMERIC %>': maxLength = format['numeric'];
-					break;
-				case '<%= Constants.MODE_ALPHANUMERIC %>': maxLength = format['alphanumeric'];
-					break;
-				case '<%= Constants.MODE_BYTE %>': maxLength = format['byte'];
-					break;
-				case '<%= Constants.MODE_KANJI %>': maxLength = format['kanji'];
-					break;
-			}
-
-			<portlet:namespace />formValidator = new A.FormValidator(
-				{
-					boundingBox: document.<portlet:namespace />fm,
-					validateOnInput: true,
-					rules : {
-						<portlet:namespace />contentField:{
-							rangeLength: [1, maxLength]
-						},
-						<portlet:namespace />shadowAngleField:{
-							digits: true,
-							min: 0,
-							max: 360
-						}
-					}
-				}
-			);
-		}
-	);
-
 	AUI().ready('aui-form-validator', function(A) {
 		<portlet:namespace />formValidator = new A.FormValidator(
-				{
-					boundingBox: document.<portlet:namespace />fm,
-					validateOnInput: true,
-					rules : {
-						<portlet:namespace />shadowAngleField:{
-							digits: true,
-							min: 0,
-							max: 360
-						},
-						<portlet:namespace />shadowOpacityField:{
-							digits: true,
-							min: 0,
-							max: 100
-						}
+			{
+				boundingBox: document.<portlet:namespace />fm,
+				validateOnInput: true,
+				rules : {
+					<portlet:namespace />shadowAngleField:{
+						digits: true,
+						min: 0,
+						max: 360
+					},
+					<portlet:namespace />shadowOpacityField:{
+						digits: true,
+						min: 0,
+						max: 100
 					}
 				}
-			);
+			}
+		);
 	});
 </aui:script>
 
 <aui:script use="aui-base">
+function <portlet:namespace />getMaxLength() {
+return 100;
+}
 	A.one('#<portlet:namespace />displayTypeField').on(
 		'change',
 		function() {
@@ -446,31 +398,4 @@
 		}
 	);
 
-	A.one('#<portlet:namespace />contentField').on(
-		'focus',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
-
-	A.one('#<portlet:namespace />dimensions').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
-
-	A.one('#<portlet:namespace />errorCorrectionField').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
-
-	A.one('#<portlet:namespace />modeField').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
 </aui:script>
