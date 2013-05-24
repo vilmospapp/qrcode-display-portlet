@@ -25,6 +25,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ page import="com.liferay.portal.kernel.servlet.BrowserSnifferUtil" %><%@
+page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%><%@
 page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@

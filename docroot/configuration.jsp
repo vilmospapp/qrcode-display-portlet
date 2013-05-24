@@ -19,6 +19,8 @@
 
 <liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
 
+<liferay-util:include page="/main_js.jsp" servletContext="<%= application %>" strict="true" />
+
 <aui:form action="<%= configurationURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveConfiguration();" %>'>
 	<aui:input name="preferences--backgroundColor--" type="hidden" value="<%= backgroundColor %>" />
 	<aui:input name="preferences--borderColor--" type="hidden" value="<%= borderColor %>" />
@@ -282,23 +284,30 @@
 			document.<portlet:namespace />fm.<portlet:namespace />shadowOpacity.value = shadowOpacityField.val();
 			document.<portlet:namespace />fm.<portlet:namespace />stripParams.value = stripParamsField.val();
 
-			submitForm(document.<portlet:namespace />fm);
-		});
+			<portlet:namespace/>formValidator.validate();
 
-		AUI().ready('aui-color-picker-base', function(A) {
-			var backgroundColorNode = A.one('#<portlet:namespace />backgroundColorField');
+			if (!<portlet:namespace/>formValidator.hasErrors()) {
+				submitForm(document.<portlet:namespace />fm);
+			}
+		}
+	);
 
-			window.backgroundColorPicker = new A.ColorPicker(
-				{
-					after: {
-						colorChange: function(val) {
-							var hex = '#' + this.get('hex');
-							backgroundColorNode.setStyle('backgroundColor', hex);
-						}
+	
+
+	AUI().ready('aui-color-picker-base', function(A) {
+		var backgroundColorNode = A.one('#<portlet:namespace />backgroundColorField');
+
+		window.backgroundColorPicker = new A.ColorPicker(
+			{
+				after: {
+					colorChange: function(val) {
+						var hex = '#' + this.get('hex');
+						backgroundColorNode.setStyle('backgroundColor', hex);
 					}
 				}
-			)
-			.render('#<portlet:namespace />backgroundColorSelector');
+			}
+		)
+		.render('#<portlet:namespace />backgroundColorSelector');
 
 			var borderColorNode = A.one('#<portlet:namespace />borderColorField');
 
@@ -342,135 +351,169 @@
 			)
 			.render('#<portlet:namespace />shadowColorSelector');
 
-		});
-
-	Liferay.provide(
-		window,
-		'<portlet:namespace />updateFormValidator',
-		function() {
-			var A = AUI();
-
-			var dimensionsField = A.one('#<portlet:namespace />dimensions');
-			var displayTypeField = A.one('#<portlet:namespace />displayTypeField');
-			var errorCorrectionField = A.one('#<portlet:namespace />errorCorrectionField');
-			var modeField = A.one('#<portlet:namespace />modeField');
-
-			if (displayTypeField.val() != <%= Constants.DISPLAY_TYPE_CUSTOM_TEXT %>) {
-				return;
-			}
-
-			var dimension = "D" + dimensionsField.val() + "x" + dimensionsField.val();
-			var errorCorrection = "";
-
-			switch(errorCorrectionField.val()) {
-				case '<%= Constants.ERROR_CORRECTION_LOW %>': errorCorrection = 'L';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_MEDIUM %>': errorCorrection = 'M';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_QUARTILE %>': errorCorrection = 'Q';
-					break;
-				case '<%= Constants.ERROR_CORRECTION_HIGH %>': errorCorrection = 'L';
-					break;
-			}
-
-			var formatKey = dimension + errorCorrection;
-			var format = formats[formatKey];
-
-			var maxLength = 0;
-
-			switch(modeField.val()) {
-				case '<%= Constants.MODE_NUMERIC %>': maxLength = format['numeric'];
-					break;
-				case '<%= Constants.MODE_ALPHANUMERIC %>': maxLength = format['alphanumeric'];
-					break;
-				case '<%= Constants.MODE_BYTE %>': maxLength = format['byte'];
-					break;
-				case '<%= Constants.MODE_KANJI %>': maxLength = format['kanji'];
-					break;
-			}
-
-			<portlet:namespace />formValidator = new A.FormValidator(
-				{
-					boundingBox: document.<portlet:namespace />fm,
-					validateOnInput: true,
-					rules : {
-						<portlet:namespace />contentField:{
-							rangeLength: [1, maxLength]
-						},
-						<portlet:namespace />shadowAngleField:{
-							digits: true,
-							min: 0,
-							max: 360
-						}
-					}
-				}
-			);
 		}
 	);
 
 	AUI().ready('aui-form-validator', function(A) {
+
 		<portlet:namespace />formValidator = new A.FormValidator(
-				{
-					boundingBox: document.<portlet:namespace />fm,
-					validateOnInput: true,
-					rules : {
-						<portlet:namespace />shadowAngleField:{
-							digits: true,
-							min: 0,
-							max: 360
-						},
-						<portlet:namespace />shadowOpacityField:{
-							digits: true,
-							min: 0,
-							max: 100
-						}
-					}
+			{
+				boundingBox: document.<portlet:namespace />fm,
+				validateOnInput: true,
+				rules : {
+					<portlet:namespace />contentField:{
+						required:<%= displayType == Constants.DISPLAY_TYPE_CUSTOM_TEXT %>
+						<%
+							if (displayType == Constants.DISPLAY_TYPE_CUSTOM_TEXT) {
+							%>
+								,maxLength:<portlet:namespace />getMaxLength()
+							<%
+							}
+						%>
+					},
+					<portlet:namespace />borderRadiusField:{
+						digits: true,
+						min: 0,
+						max: 100
+					},
+					<portlet:namespace />borderWidthField:{
+						digits: true,
+						min: 0,
+						max: 360
+					},
+					<portlet:namespace />shadowAngleField:{
+						digits: true,
+						min: 0,
+						max: 360
+					},
+					<portlet:namespace />shadowBlurField:{
+						digits: true,
+						min: 0,
+						max: 100
+					},
+					<portlet:namespace />shadowDistanceField:{
+						digits: true,
+						min: 0,
+						max: 100
+					},
+					<portlet:namespace />shadowOpacityField:{
+						digits: true,
+						min: 0,
+						max: 100
+					},
+					
 				}
-			);
-	});
-</aui:script>
-
-<aui:script use="aui-base">
-	A.one('#<portlet:namespace />displayTypeField').on(
-		'change',
-		function() {
-			var disabled = true;
-
-			if (this.val() == <%= Constants.DISPLAY_TYPE_CUSTOM_TEXT %>) {
-				disabled = false;
 			}
-
-			A.one('#<portlet:namespace />contentField').attr('disabled', disabled);
-
-			A.one('#<portlet:namespace />stripParamsFieldCheckbox').attr('disabled', !disabled);
+		);
 		}
 	);
 
-	A.one('#<portlet:namespace />contentField').on(
-		'focus',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
+	function <portlet:namespace />getMaxLength() {
+		var A = AUI();
 
-	A.one('#<portlet:namespace />dimensions').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
-		}
-	);
+		var dimensionsField = A.one('#<portlet:namespace />dimensions');
+		var displayTypeField = A.one('#<portlet:namespace />displayTypeField');
+		var errorCorrectionField = A.one('#<portlet:namespace />errorCorrectionField');
+		var modeField = A.one('#<portlet:namespace />modeField');
 
-	A.one('#<portlet:namespace />errorCorrectionField').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
+		if (displayTypeField.val() != <%= Constants.DISPLAY_TYPE_CUSTOM_TEXT %>) {
+			return;
 		}
-	);
 
-	A.one('#<portlet:namespace />modeField').on(
-		'change',
-		function() {
-			<portlet:namespace />updateFormValidator();
+		var dimension = "D" + dimensionsField.val() + "x" + dimensionsField.val();
+		var errorCorrection = "";
+
+		switch(errorCorrectionField.val()) {
+			case '<%= Constants.ERROR_CORRECTION_LOW %>': errorCorrection = 'L';
+				break;
+			case '<%= Constants.ERROR_CORRECTION_MEDIUM %>': errorCorrection = 'M';
+				break;
+			case '<%= Constants.ERROR_CORRECTION_QUARTILE %>': errorCorrection = 'Q';
+				break;
+			case '<%= Constants.ERROR_CORRECTION_HIGH %>': errorCorrection = 'H';
+				break;
 		}
-	);
+
+		var formatKey = dimension + errorCorrection;
+		var format = formats[formatKey];
+
+		var maxLength = 0;
+
+		switch(modeField.val()) {
+			case '<%= Constants.MODE_NUMERIC %>': maxLength = format['numeric'];
+				break;
+			case '<%= Constants.MODE_ALPHANUMERIC %>': maxLength = format['alphanumeric'];
+				break;
+			case '<%= Constants.MODE_BYTE %>': maxLength = format['byte'];
+				break;
+			case '<%= Constants.MODE_KANJI %>': maxLength = format['kanji'];
+				break;
+		}
+		return maxLength;
+	}
+
+	function <portlet:namespace />updateContentFieldRule() {
+		var A = AUI();
+
+		var contentField = A.one('#<portlet:namespace />contentField')
+		var modeField = A.one('#<portlet:namespace />modeField');
+
+		var rule = {};
+
+		if (!contentField.attr('disabled')) {
+			rule.required = true;
+			rule.maxLength = <portlet:namespace />getMaxLength();
+
+			if(modeField.val() == '<%= Constants.MODE_NUMERIC %>') {
+				rule.digits = true;
+			}
+		}
+
+		<portlet:namespace/>formValidator.get('rules')['<portlet:namespace />contentField'] = rule;
+
+		<portlet:namespace/>formValidator.validateField(contentField);
+
+	}
+
+	AUI().ready('aui-base', function(A) {
+		A.one('#<portlet:namespace />dimensions').on(
+			'change',
+			function() {
+				<portlet:namespace />updateContentFieldRule();
+			}
+		);
+
+		A.one('#<portlet:namespace />displayTypeField').on(
+			'change',
+			function() {
+				var disabled = true;
+
+				if (this.val() == <%= Constants.DISPLAY_TYPE_CUSTOM_TEXT %>) {
+					disabled = false;
+				}
+
+				A.one('#<portlet:namespace />contentField').attr('disabled', disabled);
+
+				A.one('#<portlet:namespace />stripParamsFieldCheckbox').attr('disabled', !disabled);
+
+				<portlet:namespace />updateContentFieldRule();
+			}
+		);
+
+		A.one('#<portlet:namespace />errorCorrectionField').on(
+			'change',
+			function() {
+				<portlet:namespace />updateContentFieldRule();
+			}
+		);
+
+		A.one('#<portlet:namespace />modeField').on(
+			'change',
+			function() {
+				<portlet:namespace />updateContentFieldRule();
+			}
+		);
+	});
+
+
 </aui:script>
